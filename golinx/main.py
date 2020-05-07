@@ -14,6 +14,9 @@ def main(argv):
   for i in range(0, FLAGS.num_times):
     print('Hello, %s!' % FLAGS.name)
 
+    for i in range(0, 100):
+      print(i)
+
 
 if __name__ == '__main__':
   app.run(main)
