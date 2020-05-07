@@ -6,11 +6,26 @@
 load("@rules_python//python:python.bzl", "py_binary", "py_library", "py_test")
 load("@pip_reqs//:requirements.bzl", "requirement")
 
+package(
+    default_visibility = ["//golinx:__subpackages__",]
+)
+
+py_library(
+    name = "utils",
+    srcs = ["utils.py"],
+    deps = [
+        requirement("Flask"),
+    ],
+)
+
 py_binary(
     name = "main",
     srcs = ["main.py"],
     deps = [
+        "//golinx/controllers:link",
+        "//golinx/models:db",
         requirement("Flask"),
         requirement("absl-py"),
     ],
 )
+
