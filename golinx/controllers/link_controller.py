@@ -21,7 +21,8 @@ class LinkHtmlController(views.MethodView):
             # return {'data': [item.as_dict(serialize_date=True) for item in links]}
             return flask.render_template('link/index.html', links=links)
         else:
-            return link_id
+            link = link_model.LinkModel.get(db.get_db(), link_id)
+            return flask.render_template('link/get.html', link=link)
 
     def put(self, link_id: str) -> str:
         """Updates existing link."""

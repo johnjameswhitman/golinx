@@ -21,13 +21,23 @@ py_library(
 py_binary(
     name = "main",
     srcs = ["main.py"],
-    data = [":templates"],
+    data = [
+        ":templates",
+        ":static",
+    ],
     deps = [
         "//golinx/controllers:link_controller",
         "//golinx/models:db",
         requirement("Flask"),
         requirement("absl-py"),
     ],
+)
+
+filegroup(
+    name = "static_assets",
+    srcs = glob([
+        "static/*",
+        ])
 )
 
 filegroup(

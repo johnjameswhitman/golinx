@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{ link['title'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div>Back to <a href="{{ url_for('link.link') }}">all links</a>.</div>
+
+    <table id="link">
+        <thead>
+            <td>Field</td>
+            <td>Value</td>
+        </thead>
+        <tbody>
+            {% for field, value in link.as_dict(serialize_date=True).items() %}
+                <tr>
+                    <td>{{ field }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
