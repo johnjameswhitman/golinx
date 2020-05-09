@@ -6,10 +6,15 @@ package(
 )
 
 py_library(
-    name = "link",
-    srcs = ["link.py"],
+    name = "link_controller",
+    srcs = ["link_controller.py"],
+    data = [
+        "//golinx:templates",
+    ],
     deps = [
         "//golinx:utils",
+        "//golinx/models:db",
+        "//golinx/models:link_model",
         requirement("Flask"),
     ],
 )

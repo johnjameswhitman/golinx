@@ -3,8 +3,8 @@ import sqlite3
 import flask
 from flask import cli
 
-from golinx.models import link
-from golinx.models import user
+from golinx.models import link_model
+from golinx.models import user_model
 
 def get_db():
     if 'db' not in flask.g:
@@ -32,21 +32,14 @@ def init_db():
 
     with flask.current_app.open_resource(
             'models/data/seed_users.csv', mode='r') as f:
-        for seed_user in user.User.from_csv(f):
-            seed_user.db = db
+        for seed_user in user_model.UserModel.from_csv(f, db=db):
             seed_user.save()
 
     with flask.current_app.open_resource(
             'models/data/seed_links.csv', mode='r') as f:
-        for seed_link in link.Link.from_csv(f):
-            seed_link.db = db
+        for seed_link in link_model.LinkModel.from_csv(f, db=db):
             seed_link.save()
-
-    query = 'SELECT * FROM link'
-    for row in db.execute(query).fetchall():
-        print(row)
 
 
 def init_app(app):
     app.teardown_appcontext(close_db)
-    app.cli.add_command(init_db_command)

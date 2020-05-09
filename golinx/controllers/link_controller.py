@@ -1,22 +1,25 @@
-import functools
+"""Controllers that generate views for the link resource."""
 import json
 
 import flask
 from flask import views
 
 from golinx import utils
+from golinx.models import db
+from golinx.models import link_model
 
 
 ENDPOINT_NAME = 'link'
 URL_PREFIX = '/links'
 
 
-class LinkHtmlView(views.MethodView):
+class LinkHtmlController(views.MethodView):
     def get(self, link_id: str) -> str:
         """Gets all or one link record."""
         if link_id is None:
-            link_ids = ['a', 'b', 'c']
-            return ', '.join(link_ids)
+            links = link_model.LinkModel.all(db.get_db())
+            # return {'data': [item.as_dict(serialize_date=True) for item in links]}
+            return flask.render_template('link/index.html', links=links)
         else:
             return link_id
 
@@ -33,12 +36,11 @@ class LinkHtmlView(views.MethodView):
         return 'fake delete of {}'.format(link_id)
 
 
-class LinkJsonView(views.MethodView):
+class LinkJsonController(views.MethodView):
     def get(self, link_id: str) -> str:
         """Gets all or one link record."""
         if link_id is None:
-            link_ids = list({'link_id': v} for v in ['a', 'b', 'c'])
-            return json.dumps(link_ids)
+            return {'data': [item.as_dict(serialize_date=True) for item in link_model.LinkModel.all(db.get_db())]}
         else:
             return json.dumps({'link_id': link_id})
 
@@ -58,12 +60,14 @@ class LinkJsonView(views.MethodView):
 def create_blueprint() -> flask.Blueprint:
     """Provides the link-resource blueprint, ready for use."""
     blueprint = flask.Blueprint(
-            ENDPOINT_NAME, __name__, url_prefix=URL_PREFIX)
+        ENDPOINT_NAME,
+        __name__,
+        url_prefix=URL_PREFIX)
 
-    utils.register_resource(blueprint, LinkHtmlView, ENDPOINT_NAME,
-            pk='link_id', pk_type='string')
+    utils.register_resource(blueprint, LinkHtmlController, ENDPOINT_NAME,
+                            pk='link_id', pk_type='string')
 
-    utils.register_resource(blueprint, LinkJsonView, ENDPOINT_NAME + '_json',
-            suffix='.json', pk='link_id', pk_type='string')
+    utils.register_resource(blueprint, LinkJsonController, ENDPOINT_NAME + '_json',
+                            suffix='.json', pk='link_id', pk_type='string')
 
     return blueprint

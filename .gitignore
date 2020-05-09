@@ -2,6 +2,7 @@
 
 # My venv
 golinx-env
+golinx.sqlite
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

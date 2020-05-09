@@ -21,11 +21,19 @@ py_library(
 py_binary(
     name = "main",
     srcs = ["main.py"],
+    data = [":templates"],
     deps = [
-        "//golinx/controllers:link",
+        "//golinx/controllers:link_controller",
         "//golinx/models:db",
         requirement("Flask"),
         requirement("absl-py"),
     ],
 )
 
+filegroup(
+    name = "templates",
+    srcs = glob([
+        "templates/*.html",
+        "templates/**/*.html",
+        ])
+)

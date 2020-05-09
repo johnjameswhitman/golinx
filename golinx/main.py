@@ -1,26 +1,33 @@
 import os
+from typing import Any, Dict
 
 from absl import app
 from absl import flags
 import flask
 
-from golinx.controllers import link
+from golinx.controllers import link_controller
 from golinx.models import db
 
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string('host', None, 'IP address on which to listen.')
 flags.DEFINE_integer('port', 5000, 'Port on which to listen.')
+flags.DEFINE_string('database_path', None, 'File holding sqlite database.')
 flags.DEFINE_boolean('debug', True, 'Whether to operate in debug mode.')
 flags.DEFINE_boolean('init_db', False, 'Whether to initialize SQLite.')
 
 
-def create_app(config=None):
+def create_app(database_path: str = None, config: Dict[str, Any] = None):
     # create and configure the app
+
     app = flask.Flask(__name__, instance_relative_config=True)
+
+    if not database_path:
+        database_path = os.path.join(app.instance_path, 'golinx.sqlite')
+
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'golinx.sqlite'),
+        DATABASE=database_path,
     )
 
     if config is None:
@@ -36,7 +43,7 @@ def create_app(config=None):
     except OSError:
         pass
 
-    app.register_blueprint(link.create_blueprint())
+    app.register_blueprint(link_controller.create_blueprint())
 
     return app
 
@@ -44,15 +51,13 @@ def create_app(config=None):
 def main(argv):
     del argv  # Unused.
 
-    app = create_app()
-    
+    app = create_app(FLAGS.database_path)
+
     if FLAGS.init_db:
         with app.app_context():
             db.init_db()
 
     app.run(host=FLAGS.host, port=FLAGS.port, debug=FLAGS.debug)
 
-
 if __name__ == '__main__':
     app.run(main)
-

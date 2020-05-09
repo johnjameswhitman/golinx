@@ -14,30 +14,30 @@ py_library(
             "data/seed_users.csv",
     ],
     deps = [
-        ":link",
-        ":user",
+        ":link_model",
+        ":user_model",
         requirement("Flask"),
     ],
 )
 
 py_library(
-    name = "model",
-    srcs = ["model.py"],
+    name = "base_model",
+    srcs = ["base_model.py"],
 )
 
 py_library(
-    name = "link",
-    srcs = ["link.py"],
+    name = "link_model",
+    srcs = ["link_model.py"],
     deps = [
-        ":model",
+        ":base_model",
     ],
 )
 
 py_library(
-    name = "user",
-    srcs = ["user.py"],
+    name = "user_model",
+    srcs = ["user_model.py"],
     deps = [
-        ":model",
+        ":base_model",
     ],
 )
 

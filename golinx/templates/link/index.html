@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}All Your Links{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <ul id="links">
+        {% for link in links %}
+            <li><a href="{{ url_for('link.link', link_id=link['id']) }}">{{ link['title'] }} Link!</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
