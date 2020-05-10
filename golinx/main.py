@@ -43,7 +43,13 @@ def create_app(database_path: str = None, config: Dict[str, Any] = None):
     except OSError:
         pass
 
+
     app.register_blueprint(link_controller.create_blueprint())
+
+    # @app.route('/', defaults={'path': ''})
+    # @app.route('/<path:path>')
+    # def catch_all(path):
+    #     return 'You hit catchall handler with path: %s' % path
 
     return app
 

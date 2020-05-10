@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Create a Golinx{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {# TODO(john): We need to create some kind of front-end validation, perhaps in the script up top. #}
+  <form action="{{ url_for('link.link') }}" method="post">
+    <label for="destination">Destination URL</label>
+    <input name="destination" id="destination" required>
+    <label for="shortlink">Create Short Link?</label>
+    <input name="shortlink" id="shortlink" value="shortlink" type="checkbox">
+    <label for="shortcut">Custom Shortcut</label>
+    <input name="shortcut" id="shortcut">
+    <label for="title">Title</label>
+    <input name="title" id="title">
+    <label for="description">Description</label>
+    <input name="description" id="description">
+    <input type="submit" onsubmit="return validateForm();" value="Create Shortcut">
+  </form>
+{% endblock %}
+
+{% block footer %}
+  <script>
+    document.getElementById('shortlink').onclick = function() {
+      document.getElementById('shortcut').disabled = this.checked;
+    };
+
+    function validateForm() {
+      if (!(document.getElementById('shortlink').checked || document.getElementById('shortcut').value)) {
+        alert("Please either check the box to create a short-link or provide a custom shortcut.");
+        return false;
+      }
+      return true;
+    };
+  </script>
+{% endblock %}

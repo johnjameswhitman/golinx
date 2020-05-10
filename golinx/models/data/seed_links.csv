@@ -1,4 +1,4 @@
-canonical_path,original_path,destination,type,owner_id,other_owners,readers,title,description
--abcd,,https://google.com,SHORT,1,user:2,world,Search something,
-homepage,home-page,https://git.s2sq.com,CUSTOM,2,,world,Home Page,
-mail,mail,https://mail.s2sq.com,CUSTOM,1,,user:2,S2SQ Web mail,
+canonical_path,original_path,destination,link_type,owner_id,created_by,updated_by,other_owners,readers,title,description
+-abcd,,https://google.com,SHORT,1,1,1,user:2,world,Search something,
+homepage,home-page,https://github.com/johnjameswhitman/,CUSTOM,1,2,1,,world,Code,
+mail,mail,https://mail.google.com,CUSTOM,1,1,2,,user:2,The Gmails,Great if clunky email service

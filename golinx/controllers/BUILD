@@ -14,6 +14,7 @@ py_library(
     deps = [
         "//golinx:utils",
         "//golinx/models:db",
+        "//golinx/models:base_model",
         "//golinx/models:link_model",
         requirement("Flask"),
     ],

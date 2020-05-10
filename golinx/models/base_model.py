@@ -8,6 +8,10 @@ from typing import Any, ClassVar, Dict, IO, Iterable, Optional, Type, Union
 DbConnection = Union[sqlite3.Connection]
 
 
+class ModelError(Exception):
+    """Class to handle issues with records."""
+
+
 @dataclasses.dataclass
 class BaseModel(object):
     table_name: ClassVar[str] = None
@@ -15,6 +19,8 @@ class BaseModel(object):
     id: int = None
     created_at: datetime.datetime = dataclasses.field(default_factory=datetime.datetime.now)
     updated_at: datetime.datetime = dataclasses.field(default_factory=datetime.datetime.now)
+    created_by: Optional[int] = None
+    updated_by: Optional[int] = None
 
     def __post_init__(self, db: Optional[DbConnection] = None):
         if db:
@@ -63,8 +69,8 @@ class BaseModel(object):
 
         return item
 
-    def save(self) -> None:
-        """Given a DBAPI2 compliant connection, saves if."""
+    def save(self) -> int:
+        """Given a DBAPI2 compliant connection, updates or inserts a record and returns ID."""
         self.validate()
         item = dataclasses.asdict(self)
         item_id = item['id']
@@ -76,10 +82,18 @@ class BaseModel(object):
                     f=', '.join(item.keys()),
                     p=', '.join('?' for _ in range(len(item))))
         else:
+            self.updated_at = datetime.datetime.now()
+            # TODO(john): Also set `self.updated_by` once we create users.
             statement = 'UPDATE {t} SET {kv} WHERE id = {i}'.format(
                     t=self.table_name,
                     kv=', '.join('{} = ?'.format(k) for k in item.keys()),
                     i=int(item_id))
 
-        self.db.execute(statement, tuple(item.values()))
-        self.db.commit()
+        print(statement)
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(statement, tuple(item.values()))
+            if item_id is None:
+                self.id = cursor.lastrowid
+    
+        return self.id
