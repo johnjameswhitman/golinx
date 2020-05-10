@@ -29,10 +29,11 @@ def register_resource(
     Set the suffix argument to distinguish something like JSON APIs from their
     corresponding HTML versions.
     """
-    view_func = view.as_view(endpoint) 
+    view_func = view.as_view(endpoint)
+
     # Basically a list view.
-#     resource.add_url_rule('{}{}'.format(url, suffix), defaults={pk: None},
-#             view_func=view_func, methods=['GET'])
+    # resource.add_url_rule('{}{}'.format(url, suffix), defaults={pk: None},
+    #         view_func=view_func, methods=['GET'])
     resource.add_url_rule('{}/{}'.format(url, suffix), defaults={pk: None},
             view_func=view_func, methods=['GET'])
 
