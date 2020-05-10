@@ -92,8 +92,11 @@ class BaseModel(object):
         print(statement)
         with self.db:
             cursor = self.db.cursor()
-            cursor.execute(statement, tuple(item.values()))
-            if item_id is None:
-                self.id = cursor.lastrowid
+            try:
+                cursor.execute(statement, tuple(item.values()))
+                if item_id is None:
+                    self.id = cursor.lastrowid
+            except sqlite3.IntegrityError as e:
+                raise ModelError(str(e))
     
         return self.id

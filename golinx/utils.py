@@ -30,6 +30,7 @@ def register_resource(
     corresponding HTML versions.
     """
     view_func = view.as_view(endpoint)
+    item_view_func = view.as_view(endpoint + '_item')
 
     # Basically a list view.
     # resource.add_url_rule('{}{}'.format(url, suffix), defaults={pk: None},
@@ -43,5 +44,5 @@ def register_resource(
 
     # Read, Update, Destroy
     resource.add_url_rule(
-            '{}/<{}:{}>{}'.format(url, pk_type, pk, suffix), view_func=view_func,
+            '{}/<{}:{}>'.format(url, pk_type, pk), view_func=view_func,
             methods=['GET', 'PUT', 'DELETE'])

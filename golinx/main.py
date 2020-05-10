@@ -63,6 +63,7 @@ def main(argv):
         with app.app_context():
             db.init_db()
 
+    print(app.url_map)
     app.run(host=FLAGS.host, port=FLAGS.port, debug=FLAGS.debug)
 
 if __name__ == '__main__':

@@ -19,6 +19,7 @@ URL_PREFIX = '/links'
 class LinkHtmlController(views.MethodView):
     ENDPOINT_NAME = 'link'
 
+    # TODO(john): Create `index` method separately.
     def get(self, link_id: str) -> str:
         """Gets all or one link record."""
         if link_id is None:
@@ -65,35 +66,19 @@ class LinkHtmlController(views.MethodView):
         try:
             link_id = link.save()
             print('Link id is ', link_id)
-            # return str(link_id)
-            return flask.redirect(flask.url_for('.link', link_id=str(link_id)))
+            # TODO(john): Dive into url_for impl to understand conflict w/ querystring.
+            # Essentially, it ends up here:
+            # - https://github.com/pallets/flask/tree/master/src/flask#L211 (url_for)
+            # - https://github.com/pallets/werkzeug/blob/master/src/werkzeug/routing.py#L2060 (url_map.build)
+            #
+            # While I figure this out, create a "ResourceController" base class that handles this bs.
+            print('URL is ', flask.url_for('.link', link_id=str(link_id)))
+            print('URL Map is ', str(flask._request_ctx_stack.top.url_adapter.map))
+            return flask.redirect(flask.url_for('.link', link_id=str(link_id)), code=303)
         except base_model.ModelError as e:
             flask.flash(str(e))
-            # return str(e)
-            return flask.redirect(flask.url_for('.link', link_id='new'), code=400)
-
-    def delete(self, link_id: str) -> str:
-        """Deletes the link."""
-        return 'fake delete of {}'.format(link_id)
-
-
-class LinkJsonController(views.MethodView):
-    ENDPOINT_NAME = 'link_json'
-
-    def get(self, link_id: str) -> str:
-        """Gets all or one link record."""
-        if link_id is None:
-            return {'data': [item.as_dict(serialize_date=True) for item in link_model.LinkModel.all(db.get_db())]}
-        else:
-            return json.dumps({'link_id': link_id})
-
-    def put(self, link_id: str) -> str:
-        """Updates existing link."""
-        return link_id
-
-    def post(self) -> str:
-        """Creates new link."""
-        return 'nothing done yet.'
+            # TODO(john): Repopulate form with old data.
+            return flask.redirect(flask.url_for('.link_item', link_id='new'), code=303)
 
     def delete(self, link_id: str) -> str:
         """Deletes the link."""
@@ -109,8 +94,5 @@ def create_blueprint() -> flask.Blueprint:
 
     utils.register_resource(blueprint, LinkHtmlController, LinkHtmlController.ENDPOINT_NAME,
                             pk='link_id', pk_type='string')
-
-    utils.register_resource(blueprint, LinkJsonController, LinkJsonController.ENDPOINT_NAME,
-                            suffix='.json', pk='link_id', pk_type='string')
 
     return blueprint
