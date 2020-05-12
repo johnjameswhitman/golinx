@@ -3,6 +3,7 @@
 from typing import Union
 
 import flask
+from flask import views
 
 
 RESERVED_ROUTES = [
@@ -15,7 +16,7 @@ RESERVED_ROUTES = [
 
 def register_resource(
         resource: Union[flask.Flask, flask.Blueprint],
-        view: Union[flask.views.MethodView, flask.views.View],
+        view: Union[views.MethodView, views.View],
         endpoint: str,
         url: str = '',
         suffix: str = '',
@@ -30,11 +31,8 @@ def register_resource(
     corresponding HTML versions.
     """
     view_func = view.as_view(endpoint)
-    item_view_func = view.as_view(endpoint + '_item')
 
     # Basically a list view.
-    # resource.add_url_rule('{}{}'.format(url, suffix), defaults={pk: None},
-    #         view_func=view_func, methods=['GET'])
     resource.add_url_rule('{}/{}'.format(url, suffix), defaults={pk: None},
             view_func=view_func, methods=['GET'])
 
@@ -44,5 +42,5 @@ def register_resource(
 
     # Read, Update, Destroy
     resource.add_url_rule(
-            '{}/<{}:{}>'.format(url, pk_type, pk), view_func=view_func,
+            '{}/<{}:{}>{}'.format(url, pk_type, pk, suffix), view_func=view_func,
             methods=['GET', 'PUT', 'DELETE'])

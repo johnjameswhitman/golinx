@@ -4,7 +4,8 @@
 # https://github.com/bazelbuild/rules_python/blob/master/docs/python.md#py_runtime_pair
 
 load("@rules_python//python:python.bzl", "py_binary", "py_library", "py_test")
-load("@pip_reqs//:requirements.bzl", "requirement")
+load("@py_deps//:requirements.bzl", "requirement")
+
 
 package(
     default_visibility = ["//golinx:__subpackages__",]

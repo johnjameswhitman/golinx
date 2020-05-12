@@ -1,5 +1,5 @@
 load("@rules_python//python:python.bzl", "py_binary", "py_library", "py_test")
-load("@pip_reqs//:requirements.bzl", "requirement")
+load("@py_deps//:requirements.bzl", "requirement")
 
 package(
     default_visibility = ["//golinx:__subpackages__",]
@@ -40,4 +40,3 @@ py_library(
         ":base_model",
     ],
 )
-

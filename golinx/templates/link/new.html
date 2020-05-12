@@ -6,7 +6,7 @@
 
 {% block content %}
   {# TODO(john): We need to create some kind of front-end validation, perhaps in the script up top. #}
-  <form action="{{ url_for('link.link') }}" method="post">
+  <form action="{{ url_for('link.item') }}" method="post">
     <label for="destination">Destination URL</label>
     <input name="destination" id="destination" required>
     <label for="shortlink">Create Short Link?</label>

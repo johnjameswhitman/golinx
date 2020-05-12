@@ -21,6 +21,7 @@ class BaseModel(object):
     updated_at: datetime.datetime = dataclasses.field(default_factory=datetime.datetime.now)
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
+    is_deleted: Optional[bool] = None
 
     def __post_init__(self, db: Optional[DbConnection] = None):
         if db:
