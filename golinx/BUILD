@@ -5,7 +5,11 @@
 
 load("@rules_python//python:python.bzl", "py_binary", "py_library", "py_test")
 load("@py_deps//:requirements.bzl", "requirement")
-
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_image",
+)
+load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
 
 package(
     default_visibility = ["//golinx:__subpackages__",]
@@ -47,4 +51,37 @@ filegroup(
         "templates/*.html",
         "templates/**/*.html",
         ])
+)
+
+# Testing Docker Image
+py3_image(
+    name = "golinx_py",
+    srcs = ["main.py"],
+    data = [
+        ":templates",
+        ":static",
+    ],
+    base = "@official_python3//image",
+    # As a docker-ism, you want your smallest, most-frequently changing layers
+    # listed last, because layers are cached and if you change an earlier layer
+    # then later layers will have to be rebuilt.
+    layers = [
+        requirement("Flask"),
+        requirement("absl-py"),
+        "//golinx/models:db",
+        "//golinx/controllers:link_controller",
+    ],
+    main = "main.py",
+    args = [
+        "--port=5080",
+        "--init_db",
+    ],
+)
+
+container_image(
+    name = "container",
+    base = ":golinx_py",
+    ports = [
+        "5080",
+    ]
 )

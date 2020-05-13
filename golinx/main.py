@@ -10,7 +10,7 @@ from golinx.models import db
 
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('host', None, 'IP address on which to listen.')
+flags.DEFINE_string('host', '0.0.0.0', 'IP address on which to listen.')
 flags.DEFINE_integer('port', 5000, 'Port on which to listen.')
 flags.DEFINE_string('database_path', None, 'File holding sqlite database.')
 flags.DEFINE_boolean('debug', True, 'Whether to operate in debug mode.')
@@ -44,11 +44,6 @@ def create_app(database_path: str = None, config: Dict[str, Any] = None):
         pass
 
     app.register_blueprint(link_controller.LinkController.as_blueprint())
-
-    # @app.route('/', defaults={'path': ''})
-    # @app.route('/<path:path>')
-    # def catch_all(path):
-    #     return 'You hit catchall handler with path: %s' % path
 
     return app
 
