@@ -35,6 +35,7 @@ py_binary(
         "//golinx/models:db",
         requirement("Flask"),
         requirement("absl-py"),
+        requirement("uwsgi")
     ],
 )
 
@@ -53,10 +54,27 @@ filegroup(
         ])
 )
 
+
+py_binary(
+    name = "server",
+    srcs = ["server.py"],
+    data = [
+        ":templates",
+        ":static",
+    ],
+    deps = [
+        requirement("Flask"),
+        requirement("absl-py"),
+        requirement("gevent"),
+        "//golinx/models:db",
+        "//golinx/controllers:link_controller",
+    ],
+)
+
 # Testing Docker Image
 py3_image(
     name = "golinx_py",
-    srcs = ["main.py"],
+    srcs = ["server.py"],
     data = [
         ":templates",
         ":static",
@@ -68,10 +86,11 @@ py3_image(
     layers = [
         requirement("Flask"),
         requirement("absl-py"),
+        requirement("gevent"),
         "//golinx/models:db",
         "//golinx/controllers:link_controller",
     ],
-    main = "main.py",
+    main = "server.py",
     args = [
         "--port=5080",
         "--init_db",

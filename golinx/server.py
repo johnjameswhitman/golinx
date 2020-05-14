@@ -1,9 +1,10 @@
 import os
 from typing import Any, Dict
 
-from absl import app
+from absl import app as aapp
 from absl import flags
 import flask
+from gevent.pywsgi import WSGIServer
 
 from golinx.controllers import link_controller
 from golinx.models import db
@@ -47,16 +48,6 @@ def create_app(database_path: str = None, config: Dict[str, Any] = None):
 
     return app
 
-def prodapp():
-    app = create_app(FLAGS.database_path)
-
-    if FLAGS.init_db:
-        with app.app_context():
-            db.init_db()
-
-    print(app.url_map)
-    print(flask.__file__)
-    return app
 
 def main(argv):
     del argv  # Unused.
@@ -67,9 +58,10 @@ def main(argv):
         with app.app_context():
             db.init_db()
 
-    print(app.url_map)
-    print(flask.__file__)
-    app.run(host=FLAGS.host, port=FLAGS.port, debug=FLAGS.debug)
+    print('Serving app...')
+    http_server = WSGIServer((FLAGS.host, FLAGS.port), app)
+    http_server.serve_forever()
+
 
 if __name__ == '__main__':
-    app.run(main)
+    aapp.run(main)
