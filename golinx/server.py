@@ -4,7 +4,8 @@ from typing import Any, Dict
 from absl import app as aapp
 from absl import flags
 import flask
-from gevent.pywsgi import WSGIServer
+# from gevent.pywsgi import WSGIServer
+import bjoern
 
 from golinx.controllers import link_controller
 from golinx.models import db
@@ -59,8 +60,9 @@ def main(argv):
             db.init_db()
 
     print('Serving app...')
-    http_server = WSGIServer((FLAGS.host, FLAGS.port), app)
-    http_server.serve_forever()
+    # http_server = WSGIServer((FLAGS.host, FLAGS.port), app)
+    # http_server.serve_forever()
+    bjoern.run(app, FLAGS.host, FLAGS.port, statsd={'enable': True, 'port': 5082})
 
 
 if __name__ == '__main__':

@@ -20,25 +20,12 @@ class LinkController(resource_controller.ResourceController):
     @staticmethod
     def index() -> str:
         """Overrides index method on parent."""
-        
-        links = link_model.LinkModel.all(db.get_db())
-        # return {'data': [item.as_dict(serialize_date=True) for item in links]}
+        links = [l for l in link_model.LinkModel.all(db.get_db())]
+        print(links)
         return flask.render_template('link/index.html', links=links)
 
-    # TODO(john): Create `index` method separately.
-    def get(self, item_id: str) -> str:
-        """Gets all or one link record."""
-        if item_id == 'new':
-            return flask.render_template('link/new.html')
-        else:
-            link = link_model.LinkModel.get(db.get_db(), item_id)
-            return flask.render_template('link/get.html', link=link)
-
-    def put(self, item_id: str) -> str:
-        """Updates existing link."""
-        return item_id
-
-    def post(self) -> str:
+    @staticmethod
+    def create() -> str:
         """Creates new link."""
         # TODO(john): Factor out validation.
         if 'shortlink' in flask.request.form and flask.request.form.getlist('shortlink')[0] == 'shortlink':
@@ -67,12 +54,30 @@ class LinkController(resource_controller.ResourceController):
 
         try:
             item_id = link.save()
+            print(link)
             return flask.redirect(flask.url_for('.item', item_id=str(item_id), _method='GET'), code=303)
         except base_model.ModelError as e:
             flask.flash(str(e))
             # TODO(john): Repopulate form with old data.
             return flask.redirect(flask.url_for('.item', item_id='new'), code=303)
 
-    def delete(self, item_id: str) -> str:
+    @staticmethod
+    def read(item_id: str) -> str:
+        """Gets all or one link record."""
+        if item_id == 'new':
+            return flask.render_template('link/new.html')
+        else:
+            link = link_model.LinkModel.get(db.get_db(), item_id)
+            return flask.render_template('link/get.html', link=link)
+
+    @staticmethod
+    def update(item_id: str) -> str:
+        """Updates existing link."""
+        return item_id
+
+    @staticmethod
+    def destroy(item_id: str) -> str:
         """Deletes the link."""
-        return 'fake delete of {}'.format(item_id)
+        link = link_model.LinkModel.get(db.get_db(), int(item_id))
+        link.soft_delete()
+        return flask.redirect(flask.url_for('.index', _method='GET'), code=303)

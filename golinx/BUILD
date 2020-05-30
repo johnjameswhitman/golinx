@@ -35,7 +35,6 @@ py_binary(
         "//golinx/models:db",
         requirement("Flask"),
         requirement("absl-py"),
-        requirement("uwsgi")
     ],
 )
 
@@ -65,7 +64,8 @@ py_binary(
     deps = [
         requirement("Flask"),
         requirement("absl-py"),
-        requirement("gevent"),
+        # requirement("gevent"),
+        requirement("bjoern"),
         "//golinx/models:db",
         "//golinx/controllers:link_controller",
     ],
@@ -102,5 +102,6 @@ container_image(
     base = ":golinx_py",
     ports = [
         "5080",
+        "5082",
     ]
 )

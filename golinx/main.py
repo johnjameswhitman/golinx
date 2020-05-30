@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 from absl import app
 from absl import flags
+from absl import logging
 import flask
 
 from golinx.controllers import link_controller
@@ -25,6 +26,7 @@ def create_app(database_path: str = None, config: Dict[str, Any] = None):
     if not database_path:
         database_path = os.path.join(app.instance_path, 'golinx.sqlite')
 
+    logging.info("Creating database at: %s", database_path)
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=database_path,

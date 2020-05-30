@@ -21,7 +21,7 @@ class BaseModel(object):
     updated_at: datetime.datetime = dataclasses.field(default_factory=datetime.datetime.now)
     created_by: Optional[int] = None
     updated_by: Optional[int] = None
-    is_deleted: Optional[bool] = None
+    is_deleted: Optional[bool] = False
 
     def __post_init__(self, db: Optional[DbConnection] = None):
         if db:
@@ -46,16 +46,20 @@ class BaseModel(object):
 
     @classmethod
     def all(cls, db: DbConnection) -> Iterable[Type['BaseModel']]:
-        query = 'SELECT * FROM {t} ORDER BY id;'.format(t=cls.table_name)
+        query = 'SELECT * FROM {t} WHERE is_deleted = 0 ORDER BY id;'.format(t=cls.table_name)
+        x = 0
         for row in db.execute(query):
+            print(x)
+            x += 1
             item = cls(**row)
+            print(item)
             item.db = db
             yield item
 
     @classmethod
     def get(cls, db: DbConnection, id: int) -> Type['BaseModel']:
         """Fetches an instance of the class on which this is called."""
-        query = 'SELECT * FROM {t} WHERE id = ?'
+        query = 'SELECT * FROM {t} WHERE is_deleted = 0 and id = ?'
         item = cls(**db.execute(
             query.format(t=cls.table_name), (id,)).fetchone())
         item.db = db
@@ -85,6 +89,7 @@ class BaseModel(object):
         else:
             self.updated_at = datetime.datetime.now()
             # TODO(john): Also set `self.updated_by` once we create users.
+            # TODO(john): Find a better way to handle keys and values to avoid interpolation.
             statement = 'UPDATE {t} SET {kv} WHERE id = {i}'.format(
                     t=self.table_name,
                     kv=', '.join('{} = ?'.format(k) for k in item.keys()),
@@ -101,3 +106,13 @@ class BaseModel(object):
                 raise ModelError(str(e))
     
         return self.id
+
+    def soft_delete(self) -> None:
+        """Sets the is_deleted flag on a resource record."""
+        statement = 'UPDATE {t} SET is_deleted = 1 WHERE id = ?'.format(t=self.table_name)
+        with self.db:
+            cursor = self.db.cursor()
+            try:
+                cursor.execute(statement, (self.id,))
+            except sqlite3.IntegrityError as e:
+                raise ModelError(str(e))
