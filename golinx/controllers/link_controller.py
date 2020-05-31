@@ -4,7 +4,6 @@ import re
 
 import flask
 
-from golinx import utils
 from golinx.controllers import resource_controller
 from golinx.models import db
 from golinx.models import base_model
@@ -12,6 +11,7 @@ from golinx.models import link_model
 
 
 class LinkController(resource_controller.ResourceController):
+    """Controller for link shortcuts."""
     RESOURCE_NAME = 'link'
     URL_PREFIX = '/links'
     ITEM_ID_TYPE = resource_controller.ItemIdTypes.STRING
@@ -28,7 +28,8 @@ class LinkController(resource_controller.ResourceController):
     def create() -> str:
         """Creates new link."""
         # TODO(john): Factor out validation.
-        if 'shortlink' in flask.request.form and flask.request.form.getlist('shortlink')[0] == 'shortlink':
+        if ('shortlink' in flask.request.form
+                and flask.request.form.getlist('shortlink')[0] == 'shortlink'):
             link_type = link_model.LinkType.SHORT.name
         else:
             link_type = link_model.LinkType.CUSTOM.name
@@ -55,9 +56,10 @@ class LinkController(resource_controller.ResourceController):
         try:
             item_id = link.save()
             print(link)
-            return flask.redirect(flask.url_for('.item', item_id=str(item_id), _method='GET'), code=303)
+            return flask.redirect(
+                flask.url_for('.item', item_id=str(item_id), _method='GET'), code=303)
         except base_model.ModelError as e:
-            flask.flash(str(e))
+            flask.flash(e)
             # TODO(john): Repopulate form with old data.
             return flask.redirect(flask.url_for('.item', item_id='new'), code=303)
 
