@@ -33,7 +33,7 @@ py_binary(
     deps = [
         "//golinx/controllers:link_controller",
         "//golinx/models:db",
-        requirement("Flask"),
+        # requirement("Flask"),
         requirement("absl-py"),
     ],
 )

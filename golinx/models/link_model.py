@@ -2,7 +2,7 @@
 import dataclasses
 import enum
 import re
-from typing import ClassVar, Iterable, Optional, Union
+from typing import ClassVar, Optional, Union
 from urllib import parse
 
 from golinx.models import base_model
